@@ -1,8 +1,4 @@
-import { FC, useEffect, useRef } from "react"
-
-type Props = {
-  html: string
-}
+import { FC, useCallback, useContext, useEffect, useRef } from "react"
 
 declare global {
   interface Window {
@@ -10,11 +6,15 @@ declare global {
   }
 }
 
+type Props = {
+  html: string
+}
+
 const KlarnaCheckout: FC<Props> = ({ html }) => {
   const ref = useRef(null)
 
   useEffect(() => {
-    if(ref.current) {
+    if (ref.current) {
       ref.current.innerHTML = html
       const scriptsTags = ref.current.getElementsByTagName("script")
       // This is necessary otherwise the scripts tags are not going to be evaluated
@@ -28,25 +28,6 @@ const KlarnaCheckout: FC<Props> = ({ html }) => {
       }
     }
   }, [html, ref])
-
-  useEffect(() => {
-    if(typeof window._klarnaCheckout === "function") {
-      console.log("_klarnaCheckout defined");
-      window._klarnaCheckout(function ({ on }) {
-        console.log("registering listeners");
-        on({
-          load: (e) => {
-            console.log("[Klarna Event]: 'load'", e)
-          },
-          shipping_address_change: (e) => {
-            console.log("[Klarna Event]: 'shipping_address_change'", e)
-          },
-        })
-      })
-    } else {
-      console.error('API not available');
-    }
-  }, [])
 
   return <div ref={ref}></div>
 }
